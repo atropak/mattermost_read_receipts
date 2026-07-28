@@ -22,7 +22,7 @@ const (
 
 	// Build tag bumped on every meaningful policy/protocol change so the
 	// webapp and the user can verify which build is actually deployed.
-	buildTag = "2026-05-21-ws-json-string"
+	buildTag = "2026-07-28-inline-thread-receipts"
 )
 
 // dbg writes a line to the plugin process stderr. Mattermost forwards it to

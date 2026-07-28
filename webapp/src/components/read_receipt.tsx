@@ -424,9 +424,25 @@ function ensureAnchor(postEl: HTMLElement): HTMLElement | null {
         return anchor;
     }
 
-    // Strategy 2: consecutive post — float an absolutely-positioned overlay in
-    // the top-right corner of the post element. This never modifies the
-    // message body and works regardless of how Mattermost lays out post text.
+    // Strategy 2: consecutive posts (including RHS thread replies) have no
+    // header. Put the receipt after the rendered message instead of overlaying
+    // the post: in some Mattermost layouts the post element's containing block
+    // is narrow, which makes a top-right overlay cover the first characters.
+    const messageText =
+        postEl.querySelector<HTMLElement>('[data-testid="post-message__text"]') ||
+        postEl.querySelector<HTMLElement>('.post-message__text') ||
+        postEl.querySelector<HTMLElement>('.post-message__text-container');
+    if (messageText) {
+        const inlineTarget =
+            messageText.querySelector<HTMLElement>('p:last-child') ||
+            messageText;
+        const anchor = makeAnchor('message');
+        inlineTarget.appendChild(anchor);
+        logInfo('anchor placed after message text', {postElementId: postEl.id});
+        return anchor;
+    }
+
+    // Last-resort fallback for an unknown Mattermost DOM shape.
     const cs = window.getComputedStyle(postEl);
     if (cs.position === 'static') {
         postEl.style.position = 'relative';
